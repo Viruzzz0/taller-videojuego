@@ -6,9 +6,15 @@ const btnRight = document.querySelector("#right");
 
 const game = canvas.getContext("2d");
 
+window.addEventListener("load", setCanvasSize);
+window.addEventListener("resize", setCanvasSize);
+
 let canvasSize;
 let elementSize;
-const playerPosition = {
+let live = 4;
+let level = 0;
+let bol = true;
+let playerPosition = {
   x: undefined,
   y: undefined,
 };
@@ -16,42 +22,7 @@ const giftPosition = {
   x: undefined,
   y: undefined,
 };
-const tnt = []
-
-window.addEventListener("load", setCanvasSize);
-window.addEventListener("resize", setCanvasSize);
-
-function startGame() {
-  game.font = elementSize + "px Verdana";
-  game.textAlign = "end";
-
-  const mapRowsCols = maps[0];
-
-  mapRowsCols.forEach((row, iRow) => {
-    const lol = row.split("");
-    lol.forEach((col, icol) => {
-      const emoji = emojis[col];
-      const posX = elementSize * (icol + 1);
-      const posY = elementSize * (iRow + 1);
-
-      game.fillText(emoji, posX, posY);
-      
-      if(col == 'X'){
-        tnt.push([posX, posY])
-      }
-
-      if (col == "O" && playerPosition.y == undefined) {
-        playerPosition.x = posX;
-        playerPosition.y = posY;
-        console.log(playerPosition);
-      } else if (col == "I") {
-        giftPosition.x = posX;
-        giftPosition.y = posY;
-      }
-    });
-  });
-  movePlayer();
-}
+let bombPosition = [];
 
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
@@ -63,24 +34,100 @@ function setCanvasSize() {
   canvas.setAttribute("width", canvasSize);
   canvas.setAttribute("height", canvasSize);
 
-  elementSize = canvasSize / 10;
+  elementSize = (canvasSize / 10) -1 ;
   startGame();
 }
 
+function startGame() {
+  game.font = elementSize + "px Verdana";
+  game.textAlign = "end";
+
+  const mapRowsCols = maps[level];
+  if (!mapRowsCols) {
+    gameWin();
+    return;
+  }
+  
+  game.clearRect(0, 0, canvasSize, canvasSize);
+
+  mapRowsCols.forEach((row, iRow) => {
+    const lol = row.split("");
+    lol.forEach((col, icol) => {
+      const emoji = emojis[col];
+      let posX = elementSize * (icol + 1);
+      let posY = elementSize * (iRow + 1);
+      posX += 16;
+
+      game.fillText(emoji, posX, posY);
+      
+      if (col == "O" && playerPosition.y == undefined) {
+        playerPosition.x = posX;
+        playerPosition.y = posY;
+      } else if (col == "I") {
+        giftPosition.x = posX;
+        giftPosition.y = posY;
+      } else if (col == "X" && bol) {
+        bombPosition.push({
+          x: posX,
+          y: posY,
+        });
+      }
+    });
+  });
+  movePlayer();
+  bol = false;
+}
+
 function movePlayer() {
-  const giftCollisionX = playerPosition.x.toFixed(3) == giftPosition.x.toFixed(3);
-  const giftCollisionY = playerPosition.y.toFixed(3) == giftPosition.y.toFixed(3);
+  const giftCollisionX =
+    playerPosition.x.toFixed(3) == giftPosition.x.toFixed(3);
+  const giftCollisionY =
+    playerPosition.y.toFixed(3) == giftPosition.y.toFixed(3);
   const giftCollision = giftCollisionX && giftCollisionY;
 
-  const tntCollisionX = playerPosition.x.toFixed(3) == giftPosition.x.toFixed(3);
-  const tntCollisionY = playerPosition.y.toFixed(3) == giftPosition.y.toFixed(3);
-  const tntCollision = giftCollisionX && giftCollisionY;
+  const bombCollision = bombPosition.some((bomb) => {
+    const compa = bomb.x.toFixed(3) == playerPosition.x.toFixed(3);
+    const compa2 = bomb.y.toFixed(3) == playerPosition.y.toFixed(3);
 
-  if (giftCollision) {
-    console.log('Colicion con regalito');
-  } 
-  if ()
+    return compa && compa2;
+  });
+
+  if (bombCollision) levelFail();
+
+  if (giftCollision) levelWin();
+
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
+}
+
+function levelWin() {
+  console.log("GANASTE PEDAZO DE TROLO");
+  level++;
+  bol = true;
+  bombPosition = [];
+  startGame();
+}
+
+function levelFail() {
+  live--;
+  console.log("BOOOMMM");
+  console.log("vidas: " + live);
+  if (live <= 0) {
+    console.log("SOS MALISIMO, PERDISTE");
+    window.alert("SOS MALISIMO, PERDISTE");
+    level = 0;
+    live = 4;
+    bol = true;
+    bombPosition = [];
+  }
+  playerPosition = {
+    x: undefined,
+    y: undefined,
+  };
+  startGame();
+}
+
+function gameWin() {
+  console.log("GANASTE ALGO EN TU VIDA");
 }
 
 window.addEventListener("keydown", moveByKeys);
@@ -99,28 +146,28 @@ function moveByKeys(event) {
 function moveUp() {
   if (playerPosition.y > elementSize + 1) {
     playerPosition.y -= elementSize;
-    setCanvasSize();
+    startGame();
     console.log("move to up", playerPosition);
   }
 }
 function moveDown() {
   if (playerPosition.y < canvasSize - 1) {
     playerPosition.y += elementSize;
-    setCanvasSize();
+    startGame();
     console.log("move to down", playerPosition);
   }
 }
 function moveLeft() {
   if (playerPosition.x > elementSize + 1) {
     playerPosition.x -= elementSize;
-    setCanvasSize();
+    startGame();
     console.log("move to left", playerPosition);
   }
 }
 function moveRight() {
   if (playerPosition.x < canvasSize - 1) {
     playerPosition.x += elementSize;
-    setCanvasSize();
+    startGame();
     console.log("move to right", playerPosition);
   }
 }
