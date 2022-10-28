@@ -3,6 +3,8 @@ const btnUp = document.querySelector("#up");
 const btnDown = document.querySelector("#down");
 const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
+const spanLives = document.querySelector("#lives");
+const spanTime = document.querySelector("#time");
 
 const game = canvas.getContext("2d");
 
@@ -11,9 +13,13 @@ window.addEventListener("resize", setCanvasSize);
 
 let canvasSize;
 let elementSize;
-let live = 4;
+let lives = 4;
 let level = 0;
 let bol = true;
+
+let timeStart;
+let timeInterval;
+
 let playerPosition = {
   x: undefined,
   y: undefined,
@@ -34,7 +40,7 @@ function setCanvasSize() {
   canvas.setAttribute("width", canvasSize);
   canvas.setAttribute("height", canvasSize);
 
-  elementSize = (canvasSize / 10) -1 ;
+  elementSize = canvasSize / 10 - 1;
   startGame();
 }
 
@@ -47,7 +53,12 @@ function startGame() {
     gameWin();
     return;
   }
-  
+  if (!timeStart) {
+    timeStart = Date.now();
+    timeInterval = setInterval(showTime, 100);
+  }
+  showLives();
+
   game.clearRect(0, 0, canvasSize, canvasSize);
 
   mapRowsCols.forEach((row, iRow) => {
@@ -56,10 +67,10 @@ function startGame() {
       const emoji = emojis[col];
       let posX = elementSize * (icol + 1);
       let posY = elementSize * (iRow + 1);
-      posX += 16;
+      // posX += 1;
 
       game.fillText(emoji, posX, posY);
-      
+
       if (col == "O" && playerPosition.y == undefined) {
         playerPosition.x = posX;
         playerPosition.y = posY;
@@ -88,7 +99,6 @@ function movePlayer() {
   const bombCollision = bombPosition.some((bomb) => {
     const compa = bomb.x.toFixed(3) == playerPosition.x.toFixed(3);
     const compa2 = bomb.y.toFixed(3) == playerPosition.y.toFixed(3);
-
     return compa && compa2;
   });
 
@@ -108,16 +118,17 @@ function levelWin() {
 }
 
 function levelFail() {
-  live--;
+  lives--;
   console.log("BOOOMMM");
-  console.log("vidas: " + live);
-  if (live <= 0) {
+  console.log("vidas: " + lives);
+  if (lives <= 0) {
     console.log("SOS MALISIMO, PERDISTE");
     window.alert("SOS MALISIMO, PERDISTE");
     level = 0;
-    live = 4;
+    lives = 4;
     bol = true;
     bombPosition = [];
+    timeStart = undefined;
   }
   playerPosition = {
     x: undefined,
@@ -128,6 +139,24 @@ function levelFail() {
 
 function gameWin() {
   console.log("GANASTE ALGO EN TU VIDA");
+  clearInterval(timeInterval);
+}
+function showLives() {
+  const heartArray = Array(lives).fill(emojis["HEART"]);
+  spanLives.innerHTML = heartArray.join("");
+}
+
+function showTime() {
+  const ms = Date.now() - timeStart;
+  const seg = parseInt(ms / 1000) % 60;
+  const min = parseInt(ms / 60000) % 60;
+  const hr = parseInt(ms / 3600000) % 24;
+  const segStr = `0${seg}`.slice(-2);
+  const minStr = `0${min}`.slice(-2);
+  const hrStr = `0${hr}`.slice(-2);
+
+  spanTime.innerHTML = `${hrStr}:${minStr}:${segStr}`;
+  // spanTime.innerHTML = `0${hr}:0${min}:0${seg}`;
 }
 
 window.addEventListener("keydown", moveByKeys);
