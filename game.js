@@ -5,6 +5,7 @@ const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const spanLives = document.querySelector("#lives");
 const spanTime = document.querySelector("#time");
+const spanRecord = document.querySelector("#record");
 
 const game = canvas.getContext("2d");
 
@@ -55,7 +56,18 @@ function startGame() {
   }
   if (!timeStart) {
     timeStart = Date.now();
-    timeInterval = setInterval(showTime, 100);
+    timeInterval = setInterval((showTime), 100);
+
+    const record = localStorage.getItem("record");
+    const ms = record;
+    const seg = parseInt(ms / 1000) % 60;
+    const min = parseInt(ms / 60000) % 60;
+    const hr = parseInt(ms / 3600000) % 24;
+    const segStr = `0${seg}`.slice(-2);
+    const minStr = `0${min}`.slice(-2);
+    const hrStr = `0${hr}`.slice(-2);
+
+    spanRecord.innerHTML = `${hrStr}:${minStr}:${segStr}`;
   }
   showLives();
 
@@ -140,7 +152,15 @@ function levelFail() {
 function gameWin() {
   console.log("GANASTE ALGO EN TU VIDA");
   clearInterval(timeInterval);
+
+  const time = Date.now() - timeStart;
+  const record = localStorage.getItem("record");
+  if (record > time || !record) {
+    console.log("Nuevo record");
+    localStorage.setItem("record", time);
+  }
 }
+
 function showLives() {
   const heartArray = Array(lives).fill(emojis["HEART"]);
   spanLives.innerHTML = heartArray.join("");
