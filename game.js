@@ -21,7 +21,7 @@ let bol = true;
 
 let timeStart;
 let timeInterval;
-const record = localStorage.getItem("record");
+let record = localStorage.getItem("record");
 
 let playerPosition = {
   x: undefined,
@@ -191,7 +191,15 @@ btnRight.addEventListener("click", moveRight);
 recordText.addEventListener("click", resetSave);
 
 function resetSave() {
-  console.log('reset cuidado');
+  let result = window.confirm('deseas reiniciar el record?');
+  if (result) {
+    
+    console.log('reset cuidado');
+    localStorage.removeItem('record');
+    record = localStorage.getItem("record");
+    showRecord(record)
+
+  }
 }
 
 function moveByKeys(event) {

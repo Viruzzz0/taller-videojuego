@@ -5,6 +5,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.inactive {
+  display: none;
+}
+
 .game-container {
   display: flex;
   align-items: center;
@@ -49,6 +54,7 @@ p {
   margin: 0;
   width: 100%;
 }
+
 @media (max-width: 440px) {
   button {
     margin-top: 25px;
