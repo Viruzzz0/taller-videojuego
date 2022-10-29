@@ -6,6 +6,7 @@ const btnRight = document.querySelector("#right");
 const spanLives = document.querySelector("#lives");
 const spanTime = document.querySelector("#time");
 const spanRecord = document.querySelector("#record");
+const recordText = document.querySelector("#recordText");
 
 const game = canvas.getContext("2d");
 
@@ -20,6 +21,7 @@ let bol = true;
 
 let timeStart;
 let timeInterval;
+const record = localStorage.getItem("record");
 
 let playerPosition = {
   x: undefined,
@@ -54,20 +56,11 @@ function startGame() {
     gameWin();
     return;
   }
+  // Ejecuta al inicio del juego
   if (!timeStart) {
     timeStart = Date.now();
-    timeInterval = setInterval((showTime), 100);
-
-    const record = localStorage.getItem("record");
-    const ms = record;
-    const seg = parseInt(ms / 1000) % 60;
-    const min = parseInt(ms / 60000) % 60;
-    const hr = parseInt(ms / 3600000) % 24;
-    const segStr = `0${seg}`.slice(-2);
-    const minStr = `0${min}`.slice(-2);
-    const hrStr = `0${hr}`.slice(-2);
-
-    spanRecord.innerHTML = `${hrStr}:${minStr}:${segStr}`;
+    timeInterval = setInterval(showTime, 100);
+    showRecord(record);
   }
   showLives();
 
@@ -152,13 +145,16 @@ function levelFail() {
 function gameWin() {
   console.log("GANASTE ALGO EN TU VIDA");
   clearInterval(timeInterval);
-
+  
   const time = Date.now() - timeStart;
-  const record = localStorage.getItem("record");
-  if (record > time || !record) {
+  let newRecord = localStorage.getItem("record");
+  if (newRecord > time || !newRecord) {
     console.log("Nuevo record");
+
     localStorage.setItem("record", time);
+    newRecord = localStorage.getItem("record");
   }
+  showRecord(newRecord)
 }
 
 function showLives() {
@@ -167,15 +163,23 @@ function showLives() {
 }
 
 function showTime() {
-  const ms = Date.now() - timeStart;
+  const time = Date.now() - timeStart;
+  spanTime.innerHTML = formatTime(time);
+}
+function showRecord(time) {
+  spanRecord.innerHTML = formatTime(time);
+}
+
+function formatTime(timeMs) {
+  const ms = timeMs;
   const seg = parseInt(ms / 1000) % 60;
   const min = parseInt(ms / 60000) % 60;
   const hr = parseInt(ms / 3600000) % 24;
   const segStr = `0${seg}`.slice(-2);
   const minStr = `0${min}`.slice(-2);
   const hrStr = `0${hr}`.slice(-2);
-
-  spanTime.innerHTML = `${hrStr}:${minStr}:${segStr}`;
+  const time = `${hrStr}:${minStr}:${segStr}`;
+  return time;
   // spanTime.innerHTML = `0${hr}:0${min}:0${seg}`;
 }
 
@@ -184,6 +188,11 @@ btnUp.addEventListener("click", moveUp);
 btnDown.addEventListener("click", moveDown);
 btnLeft.addEventListener("click", moveLeft);
 btnRight.addEventListener("click", moveRight);
+recordText.addEventListener("click", resetSave);
+
+function resetSave() {
+  console.log('reset cuidado');
+}
 
 function moveByKeys(event) {
   if (event.key === "ArrowUp") moveUp();
