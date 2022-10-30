@@ -7,6 +7,8 @@ const spanLives = document.querySelector("#lives");
 const spanTime = document.querySelector("#time");
 const spanRecord = document.querySelector("#record");
 const recordText = document.querySelector("#recordText");
+const msgGameWin = document.querySelector(".msgGameWin");
+const btnReset = document.querySelector("#btnReset");
 
 const game = canvas.getContext("2d");
 
@@ -143,9 +145,10 @@ function levelFail() {
 }
 
 function gameWin() {
+  msgGameWin.classList.toggle("inactive");
   console.log("GANASTE ALGO EN TU VIDA");
   clearInterval(timeInterval);
-  
+
   const time = Date.now() - timeStart;
   let newRecord = localStorage.getItem("record");
   if (newRecord > time || !newRecord) {
@@ -154,7 +157,7 @@ function gameWin() {
     localStorage.setItem("record", time);
     newRecord = localStorage.getItem("record");
   }
-  showRecord(newRecord)
+  showRecord(newRecord);
 }
 
 function showLives() {
@@ -166,6 +169,7 @@ function showTime() {
   const time = Date.now() - timeStart;
   spanTime.innerHTML = formatTime(time);
 }
+
 function showRecord(time) {
   spanRecord.innerHTML = formatTime(time);
 }
@@ -189,16 +193,30 @@ btnDown.addEventListener("click", moveDown);
 btnLeft.addEventListener("click", moveLeft);
 btnRight.addEventListener("click", moveRight);
 recordText.addEventListener("click", resetSave);
+btnReset.addEventListener("click", resetGame);
+
+function resetGame() {
+  msgGameWin.classList.toggle("inactive");
+  level = 0;
+  lives = 4;
+  bol = true;
+  bombPosition = [];
+  timeStart = undefined;
+  record = localStorage.getItem("record");
+  playerPosition = {
+    x: undefined,
+    y: undefined,
+  };
+  startGame();
+}
 
 function resetSave() {
-  let result = window.confirm('deseas reiniciar el record?');
+  let result = window.confirm("deseas reiniciar el record?");
   if (result) {
-    
-    console.log('reset cuidado');
-    localStorage.removeItem('record');
+    console.log("reset cuidado");
+    localStorage.removeItem("record");
     record = localStorage.getItem("record");
-    showRecord(record)
-
+    showRecord(record);
   }
 }
 

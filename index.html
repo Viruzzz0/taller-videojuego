@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>EL JUEGO</title>
-</head>
-<body>
-  <div class="game-container">
-    <canvas id="game"></canvas>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>EL JUEGO</title>
+  </head>
+  <body>
+    <div class="game-container">
+      <canvas id="game"></canvas>
 
-    <div class="btn-container">
-      <button id="up">Arriba</button>
-      <button id="left">Izquierda</button>
-      <button id="right">Derecha</button>
-      <button id="down">Abajo</button>
+      <div class="btn-container">
+        <button id="up">Arriba</button>
+        <button id="left">Izquierda</button>
+        <button id="right">Derecha</button>
+        <button id="down">Abajo</button>
+      </div>
+
+      <div class="messages">
+        <p>Vidas: <span id="lives"></span></p>
+        <p>Tiempo: <span id="time"></span></p>
+        <p id="recordText">Record: <span id="record"></span></p>
+      </div>
+
+      <div class="msgGameWin inactive">
+        <div class="contentGameWin">
+          <h2>¡Felicidades! Terminaste<br> el juego</h2>
+          <p style="font-size: 60px"">🏆</p>
+          <p>text de record</p>
+          <button id="btnReset">RESET</button>
+        </div>
+      </div>
+
+      <script src="maps.js"></script>
+      <script src="game.js"></script>
     </div>
-
-    <div class="messages">
-      <p>Vidas: <span id="lives"></span></p>
-      <p>Tiempo: <span id="time"></span></p>
-      <p id="recordText">Record: <span id="record"></span></p>
-    </div>
-
-    <div class="msgGameWin inactive">
-      <p>GANASTE</p>
-      <button>RESET</button>
-    </div>
-
-    <script src="maps.js"></script>
-    <script src="game.js"></script>
-  </div>
-</body>
+  </body>
 </html>
