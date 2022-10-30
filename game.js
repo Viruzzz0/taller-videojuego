@@ -9,6 +9,7 @@ const spanRecord = document.querySelector("#record");
 const recordText = document.querySelector("#recordText");
 const msgGameWin = document.querySelector(".msgGameWin");
 const btnReset = document.querySelector("#btnReset");
+const msgWinRecord = document.querySelector("#msgWinRecord");
 
 const game = canvas.getContext("2d");
 
@@ -156,8 +157,11 @@ function gameWin() {
 
     localStorage.setItem("record", time);
     newRecord = localStorage.getItem("record");
+    msgWinRecord.innerHTML = `Este es tu nuevo record: ${formatTime(newRecord)}`;
+  } else {
+    msgWinRecord.innerHTML = `Aun no supera el record: ${formatTime(newRecord)}`; 
   }
-  showRecord(newRecord);
+  // showRecord(newRecord);
 }
 
 function showLives() {
